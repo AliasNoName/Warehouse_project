@@ -1,0 +1,47 @@
+<?php
+
+namespace Warehouse\DataBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ListNumerated
+ *
+ * @ORM\Table(name="list_numerated")
+ * @ORM\Entity
+ */
+class ListNumerated
+{
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="delivered", type="boolean", nullable=false)
+     */
+    private $delivered;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="delivered_on", type="datetime", nullable=true)
+     */
+    private $deliveredOn;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_on", type="datetime", nullable=true)
+     */
+    private $createdOn;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(sequenceName="list_numerated_id_seq", allocationSize=1, initialValue=1)
+     */
+    private $id;
+
+
+}
