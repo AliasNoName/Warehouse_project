@@ -2,13 +2,22 @@
 
 namespace Warehouse\DataBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use FOS\RestBundle\Controller\Annotations\View;
 
-class ProductController extends FOSRestController
+class ProductController extends Controller
 {
-    public function getProductAction()
+    /**
+     * @return array
+     * @View()
+     */
+    public function getProductsAction()
     {
-        return $this->container->get('doctrine.entity_manager')->getRepository('Product')->find(1);
+        $products = $this->getDoctrine()
+            ->getRepository('WarehouseDataBundle:Product')
+            ->findAll();
+        
+        return array('products' => $products);
     }
     
 }

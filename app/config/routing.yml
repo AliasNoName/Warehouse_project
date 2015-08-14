@@ -1,8 +1,8 @@
-warehouse_data:
-    resource: "@WarehouseDataBundle/Resources/config/routes.yml"
-    type:     rest
-    prefix:   /api
-
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+    prefix:   /
+    
+products:
+    type:   rest
+    resource:   Warehouse\DataBundle\Controller\ProductController
