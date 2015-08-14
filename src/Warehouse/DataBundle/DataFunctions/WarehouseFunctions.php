@@ -3,23 +3,20 @@
 namespace Warehouse\DataBundle\DataFunctions;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Serializer;
 
-use AppBundle\Data\DataProduct;
+use Warehouse\DataBundle\DataFunctions\ProductFunctions;
 
-use AppBundle\Entity\Product;
-use AppBundle\Entity\Warehouse;
+use Warehouse\DataBundle\Entity\Product;
+use Warehouse\DataBundle\Entity\WarehouseProduct;
 
 class WarehouseFunctions
 {
     protected $em;
-    protected $serializer;
     
     
-    public function __construct(EntityManager $em, Serializer $ser)
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
-        $this->serializer = $ser;
     }
     
     //after adding new items to offer, they need to be registered in warehouse,
@@ -27,8 +24,8 @@ class WarehouseFunctions
     public function generateNewWarehouseData()
     {
         $query = $this->em->createQuery('
-        SELECT p FROM AppBundle\Entity\Product p 
-        LEFT JOIN AppBundle\Entity\Warehouse w WITH
+        SELECT p FROM Warehouse\DataBundle\Entity\Product p 
+        LEFT JOIN Warehouse\DataBundle\Entity\WarehouseProduct w WITH
         p = w.product
         WHERE w.product IS NULL
         ');
@@ -37,7 +34,7 @@ class WarehouseFunctions
         
         foreach($products as $product)
         {
-            $warehouse_entry = new Warehouse();
+            $warehouse_entry = new WarehouseProduct();
             
             $warehouse_entry->setProduct($product);
             $warehouse_entry->setQuantity(0);
@@ -53,17 +50,24 @@ class WarehouseFunctions
         return 1;
     }
     
+    public function getWarehouseInfo()
+    {
+        $query = $this->em->createQuery('SELECT w FROM Warehouse\DataBundle\Entity\WarehouseProduct w');
+        
+        return $query->getResult();
+    }
+    
     //updates new quantities to warehouse
     //AFTER call checkSuplyNeeded()
-    public function updateWarehouseProductQuantity($product)
+    public function updateWarehouseProductQuantity($list_element)
     {    
         $qb = $this->em->createQueryBuilder();
         
         $q = $qb->update('Warehouse', 'w')
             ->set('u.quantity', 'u.quantity - ?1')
             ->where('u.product = ?2')
-            ->setParameter(1, $product->getProductListProductQuantity())
-            ->setParameter(2, $product->getProductListProduct())
+            ->setParameter(1, $list_element->getQuantity())
+            ->setParameter(2, $list_element->getProduct())
             ->getQuery();
         
         $p = $q->execute();

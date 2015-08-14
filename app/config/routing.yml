@@ -6,3 +6,7 @@ app:
 products:
     type:   rest
     resource:   Warehouse\DataBundle\Controller\ProductController
+    
+warehouse:
+    type: rest
+    resource:   Warehouse\DataBundle\Controller\WarehouseController

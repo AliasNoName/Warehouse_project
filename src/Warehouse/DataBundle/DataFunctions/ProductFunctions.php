@@ -16,10 +16,9 @@ class ProductFunctions
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
-        //$this->serializer = $ser;
     }
     
-    //returns all products in JSON format
+    //returns all products
     public function getAllProducts()
     {  
         $query = $this->em->createQuery('SELECT p FROM Warehouse\DataBundle\Entity\Product p ');
@@ -33,7 +32,9 @@ class ProductFunctions
     //product should be received using HTTP/POST - NOT IMPLEMENTED
     public function addNewProduct($product)
     {    
-        $new_product = $this->serializer->deserialize($product, 'Warehouse\DataBundle\Entity\Product', 'json');
+        $new_product = new Product();
+        
+        $new_product = $product;
         
         $this->addToDatabase($new_product);
                 

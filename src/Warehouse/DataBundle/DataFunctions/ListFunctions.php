@@ -3,23 +3,21 @@
 namespace Warehouse\DataBundle\DataFunctions;
 
 
-use AppBundle\Entity\Product;
-use AppBundle\Entity\ListNumerated;
+use Warehouse\DataBundle\Entity\ProductList;
+use Warehouse\DataBundle\Entity\ListNumerated;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Serializer;
+use Warehouse\DataBundle\DataFunctions\WarehouseFunctions;
 
 
 class ListFunctions
 {
     protected $em;
-    protected $serializer;
     protected $warehouse;
     
-    public function __construct(EntityManager $em, Serializer $ser, DataWarehouse $dw)
+    public function __construct(EntityManager $em, WarehouseFunctions $dw)
     {
         $this->em           = $em;
-        $this->serializer   = $ser;
         $this->warehouse    = $dw;
     }
     
@@ -30,15 +28,12 @@ class ListFunctions
         $new_list = new ListNumerated();
         
         $this->addToDatabase($new_list);
-                
-        $list_entry = $this->serializer->
-            deserialize($productsList,
-                        'ArrayCollection<AppBundle\Entity\ProductList>', 
-                        'json');
         
-        foreach($list_entry as $entry)
+        foreach($productsList as $e)
         {
-            $entry->setProductList($new_list);
+            $new_entry = new ProductList();
+            $new_entry->setQuantity($e->quantity)->setList($new_list)->setProduct($e->product);
+            
             $this->addToDatabase($entry);
             $this->dw->updateWarehouseProductQuantity($entry);
         }

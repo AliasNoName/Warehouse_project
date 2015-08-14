@@ -20,4 +20,4 @@ services:
     list_functions:
         class: Warehouse\DataBundle\DataFunctions\ListFunctions
         arguments:
-            [@doctrine.orm.entity_manager, @serializer]
+            [@doctrine.orm.entity_manager, @serializer, @warehouse_functions]
