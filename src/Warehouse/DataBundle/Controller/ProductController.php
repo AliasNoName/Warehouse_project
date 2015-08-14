@@ -13,11 +13,13 @@ class ProductController extends Controller
      */
     public function getProductsAction()
     {
-        $products = $this->getDoctrine()
-            ->getRepository('WarehouseDataBundle:Product')
-            ->findAll();
+        $products = $this->get('product_functions')->getAllProducts();
         
         return array('products' => $products);
     }
+    
+    //public function postProductsAction()
+    
+    
     
 }

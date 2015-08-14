@@ -7,3 +7,17 @@ services:
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    product_functions:
+        class: Warehouse\DataBundle\DataFunctions\ProductFunctions
+        arguments: 
+            [@doctrine.orm.entity_manager, @serializer]
+            
+    warehouse_functions:
+        class: Warehouse\DataBundle\DataFunctions\WarehouseFunctions
+        arguments:
+            [@doctrine.orm.entity_manager, @serializer]
+            
+    list_functions:
+        class: Warehouse\DataBundle\DataFunctions\ListFunctions
+        arguments:
+            [@doctrine.orm.entity_manager, @serializer]
