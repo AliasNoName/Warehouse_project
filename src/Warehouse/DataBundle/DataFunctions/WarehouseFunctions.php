@@ -57,6 +57,16 @@ class WarehouseFunctions
         return $query->getResult();
     }
     
+    public function getWarehouseEntryInfo($id)
+    {
+        $query = $this->em->createQuery('
+        SELECT w FROM Warehouse\DataBundle\Entity\WarehouseProduct w
+        WHERE w.warehouseEntry = :foo');
+        $query->setParameter('foo',$id);
+        
+        return $query->getResult();
+    }
+    
     //updates new quantities to warehouse
     //AFTER call checkSuplyNeeded()
     public function updateWarehouseProductQuantity($list_element)
