@@ -5,7 +5,14 @@ namespace Warehouse\DataBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+
+use Warehouse\DataBundle\Entity\WarehouseProduct;
 
 class WarehouseController extends Controller 
 {
@@ -44,13 +51,23 @@ class WarehouseController extends Controller
     public function putWarehouseItemAction(Request $req, $id)
     {
         $warehouse = $this->get('warehouse_functions');
-        $entry = $warehouse->getWarehouseEntryInfo($id);
-        //treba dohvatit ono sta nam je poslao angular
-        //pretvorit to u warehouse_entry
-        $entry = $ser->deserialize($req->get('key'),'Warehouse\DataBundle\Entity\WarehouseProduct','json');
+        
+        
+        $req_array = json_decode($req->getContent(), true); 
+        $entry = json_decode($req_array['entry'], true);
+        
+        $warehouse_entry = $warehouse->getWarehouseEntryInfo($entry['warehouse_entry'])[0];
+        
+        $warehouse_entry->setQuantity($entry['quantity']);
+        $warehouse_entry->setMinQuantity($entry['min_quantity']);
         
         //poslat f-ji wpdateWarehouseProductQuantity
-        $warehouse->updateWarehouseProductQuantity($entry);
+        if($warehouse->updateNewWarehouseProductQuantity($warehouse_entry))
+            return new Response($status = 200);
+        else
+            return new Response($status = 409);//ERROR
+        
+        
     }
     
     //public function postProductsAction()

@@ -69,23 +69,25 @@ class WarehouseFunctions
     
     //updates new quantities to warehouse
     //AFTER call checkSuplyNeeded()
-    public function updateWarehouseProductQuantity($list_element)
+    public function updateNewWarehouseProductQuantity($list_element)
     {    
         $qb = $this->em->createQueryBuilder();
         
-        $q = $qb->update('Warehouse', 'w')
-            ->set('u.quantity', 'u.quantity - ?1')
-            ->where('u.product = ?2')
+        $q = $qb->update('Warehouse\DataBundle\Entity\WarehouseProduct', 'u')
+            ->set('u.quantity',  '?1')
+            ->set('u.minQuantity', '?2')
+            ->where('u.warehouseEntry = ?3')
+            ->getQuery()
             ->setParameter(1, $list_element->getQuantity())
-            ->setParameter(2, $list_element->getProduct())
-            ->getQuery();
+            ->setParameter(2, $list_element->getMinQuantity())
+            ->setParameter(3, $list_element->getWarehouseEntry());
+            
         
         $p = $q->execute();
-
-        if( $p != 1)
-        {
-            throw new Exception('imamo problema sa update query nad bazom podataka');
-        } 
+        if($p)
+            return true;
+        else
+            return false;
     }
     
     //checks if quantities are below minimum
