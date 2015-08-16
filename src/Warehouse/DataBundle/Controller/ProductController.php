@@ -19,7 +19,12 @@ class ProductController extends Controller
     }
     
     //public function postProductsAction()
-    
+    public function postProductAction()
+    {
+        //dodaj product
+        
+        //refresh warehouse
+    }
     
     
 }
