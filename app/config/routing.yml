@@ -10,3 +10,7 @@ products:
 warehouse:
     type: rest
     resource:   Warehouse\DataBundle\Controller\WarehouseController
+
+list:
+    type: rest
+    resource:   Warehouse\DataBundle\Controller\ListController

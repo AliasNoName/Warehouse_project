@@ -31,14 +31,14 @@ class ProductFunctions
     //adds new product to offer
     //product should be received using HTTP/POST - NOT IMPLEMENTED
     public function addNewProduct($product)
-    {    
+    {
         $new_product = new Product();
-        
-        $new_product = $product;
+        $new_product->setName($product['name']);
+        $new_product->setSupplier($product['supplier']);
         
         $this->addToDatabase($new_product);
                 
-        return $new_product->getName();
+        return true;
     }
     
     

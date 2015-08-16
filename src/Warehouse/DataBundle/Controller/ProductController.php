@@ -5,6 +5,9 @@ namespace Warehouse\DataBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations\View;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 class ProductController extends Controller
 {
     /**
@@ -19,9 +22,20 @@ class ProductController extends Controller
     }
     
     //public function postProductsAction()
-    public function postProductAction()
+    public function postProductAction(Request $req)
     {
-        //dodaj product
+        $req_array = json_decode($req->get['product'], true); 
+        $ok = $this->get('product_functions')->addNewProduct($req_array);
+        if($ok)
+        {
+            $this->get('warehouse_functions')->generateNewWarehouseData();
+            return new Response($status = 200);
+        }
+        else
+        {
+            return return new Response($status = 409);
+        }
+        
         
         //refresh warehouse
     }
