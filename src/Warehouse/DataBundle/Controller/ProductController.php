@@ -33,7 +33,7 @@ class ProductController extends Controller
         }
         else
         {
-            return return new Response($status = 409);
+            return new Response($status = 409);
         }
         
         
