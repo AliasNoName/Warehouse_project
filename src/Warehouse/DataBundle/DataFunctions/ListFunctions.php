@@ -42,6 +42,20 @@ class ListFunctions
         
     }
     
+    public function getAllLists()
+    {
+        $q = $htis->em->createQuery('SELECT l from Warehouse\DataBundle\Entity\ListNumerated l');
+        return $q->getResult();
+    }
+    
+    public function getDetailedList($id)
+    {
+        $q = $htis->em->createQuery('
+        SELECT l from Warehouse\DataBundle\Entity\ProductList l
+        WHERE l.entryNum = ?1')->setParameter(1,$id);
+        return $q->getResult();
+    }
+    
     
     private function addToDatabase($item)
     {
