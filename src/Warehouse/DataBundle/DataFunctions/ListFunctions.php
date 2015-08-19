@@ -7,7 +7,6 @@ use Warehouse\DataBundle\Entity\ProductList;
 use Warehouse\DataBundle\Entity\ListNumerated;
 
 use Doctrine\ORM\EntityManager;
-use Warehouse\DataBundle\DataFunctions\WarehouseFunctions;
 
 
 class ListFunctions
@@ -15,10 +14,9 @@ class ListFunctions
     protected $em;
     protected $warehouse;
     
-    public function __construct(EntityManager $em, WarehouseFunctions $dw)
+    public function __construct(EntityManager $em)
     {
         $this->em           = $em;
-        $this->warehouse    = $dw;
     }
     
     //creates new product list
@@ -44,7 +42,7 @@ class ListFunctions
     
     public function getAllLists()
     {
-        $q = $htis->em->createQuery('SELECT l from Warehouse\DataBundle\Entity\ListNumerated l');
+        $q = $this->em->createQuery('SELECT l from Warehouse\DataBundle\Entity\ListNumerated l');
         return $q->getResult();
     }
     
