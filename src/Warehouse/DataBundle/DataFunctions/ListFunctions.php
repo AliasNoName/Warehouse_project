@@ -32,41 +32,32 @@ class ListFunctions
         $c = $q->execute();
         
         $list->setCafe($c[0]);
-        
-        $this->em->getConnection()->beginTransaction();
-        try
+
+        $this->addToDatabase($list);
+
+        $q = $qb->select('p')
+            ->from('Warehouse\DataBundle\Entity\Product', 'p')
+            ->where('p.id = ?1 ')
+            ->getQuery();   
+
+        foreach($productsList as $listEntry)
         {
-            $this->addToDatabase($list);
-        
-            $q = $qb->select('p')
-                ->from('Warehouse\DataBundle\Entity\Product', 'p')
-                ->where('p.id = ?1 ')
-                ->getQuery();   
-        
-            foreach($productsList as $listEntry)
-            {
-                $q->setParameter(1,$listEntry['product']['id']);
-                $product = $q->execute();
+            $q->setParameter(1,$listEntry['product']['id']);
+            $product = $q->execute();
 
-                $productList = new ProductList();
-                $productList->setList($list)
-                    ->setQuantity($listEntry['quantity'])
-                    ->setProduct($product[0]);
+            $productList = new ProductList();
+            $productList->setList($list)
+                ->setQuantity($listEntry['quantity'])
+                ->setProduct($product[0]);
 
-                $this->addToDatabase($productList);
+            $this->addToDatabase($productList);
 
-                $this->warehouse->updateWarehouseProductQuantityFromList($productList);
-                
-            }
+            $this->warehouse->updateWarehouseProductQuantityFromList($productList);
 
-            $message = $this->warehouse->checkSuplyNeeded();
-        } 
-        catch (Exception $e) {
-            // Rollback the failed transaction attempt
-            $em->getConnection()->rollback();
-            throw $e;
         }
-        
+
+        $message = $this->warehouse->checkSuplyNeeded();
+
         return true;
 
         
