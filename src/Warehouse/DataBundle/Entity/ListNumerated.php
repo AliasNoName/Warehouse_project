@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ListNumerated
  *
- * @ORM\Table(name="list_numerated")
+ * @ORM\Table(name="list_numerated", indexes={@ORM\Index(name="IDX_68A9B72D4FBD7F10", columns={"cafe"})})
  * @ORM\Entity
  */
 class ListNumerated
@@ -43,6 +43,22 @@ class ListNumerated
      */
     private $id;
 
+    /**
+     * @var \Warehouse\DataBundle\Entity\Cafe
+     *
+     * @ORM\ManyToOne(targetEntity="Warehouse\DataBundle\Entity\Cafe")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="cafe", referencedColumnName="id")
+     * })
+     */
+    private $cafe;
+    
+    public function __construct()
+    {
+        $this->setDelivered(false);
+        $this->setCreatedOn();
+    }
+
 
 
     /**
@@ -74,9 +90,9 @@ class ListNumerated
      * @param \DateTime $deliveredOn
      * @return ListNumerated
      */
-    public function setDeliveredOn($deliveredOn)
+    public function setDeliveredOn()
     {
-        $this->deliveredOn = $deliveredOn;
+        $this->deliveredOn = new \DateTime("now");
 
         return $this;
     }
@@ -97,9 +113,9 @@ class ListNumerated
      * @param \DateTime $createdOn
      * @return ListNumerated
      */
-    public function setCreatedOn($createdOn)
+    public function setCreatedOn()
     {
-        $this->createdOn = $createdOn;
+        $this->createdOn = new \DateTime("now");
 
         return $this;
     }
@@ -122,5 +138,28 @@ class ListNumerated
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set cafe
+     *
+     * @param \Warehouse\DataBundle\Entity\Cafe $cafe
+     * @return ListNumerated
+     */
+    public function setCafe(\Warehouse\DataBundle\Entity\Cafe $cafe = null)
+    {
+        $this->cafe = $cafe;
+
+        return $this;
+    }
+
+    /**
+     * Get cafe
+     *
+     * @return \Warehouse\DataBundle\Entity\Cafe 
+     */
+    public function getCafe()
+    {
+        return $this->cafe;
     }
 }

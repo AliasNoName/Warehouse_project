@@ -90,17 +90,31 @@ class WarehouseFunctions
             return false;
     }
     
+    public function updateWarehouseProductQuantityFromList($list_entry)
+    {
+        $qb = $this->em->createQueryBuilder();
+        
+        $q = $qb->update('Warehouse\DataBundle\Entity\WarehouseProduct', 'u')
+            ->set('u.quantity',  'u.quantity - ?1')
+            ->where('u.product = ?2')
+            ->getQuery()
+            ->setParameter(1, $list_entry->getQuantity())
+            ->setParameter(3, $list_entry->getProduct());
+    }
+    
     //checks if quantities are below minimum
     //collects all info and sends email for suply
     public function checkSuplyNeeded()
     {
-        $q = $this->em->createQuery('
-        SELECT w.porduct_id FROM AppBundle\Entity\Warehouse w
-        WHERE (w.quantity-w.min_quantity) < 0
-        ');
+        $qb = $this->em->createQueryBuilder();
         
-        $notify_list = $q->getResult();
+        $q = $qb->select('wp')
+            ->from('Warehouse\DataBundle\Entity\WarehouseProduct', 'wp')
+            ->where('wp.quantity < wp.minQuantity')
+            ->getQuery();
         
+        $notify_list = $q->execute();
+        return $notify_list;
     }
     
     

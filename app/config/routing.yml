@@ -14,3 +14,7 @@ warehouse:
 list:
     type: rest
     resource:   Warehouse\DataBundle\Controller\ListController
+    
+cafe:
+    type: rest
+    resource:   Warehouse\DataBundle\Controller\CafeController

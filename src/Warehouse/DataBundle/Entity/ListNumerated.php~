@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ListNumerated
  *
- * @ORM\Table(name="list_numerated")
+ * @ORM\Table(name="list_numerated", indexes={@ORM\Index(name="IDX_68A9B72D4FBD7F10", columns={"cafe"})})
  * @ORM\Entity
  */
 class ListNumerated
@@ -42,6 +42,16 @@ class ListNumerated
      * @ORM\SequenceGenerator(sequenceName="list_numerated_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
+
+    /**
+     * @var \Warehouse\DataBundle\Entity\Cafe
+     *
+     * @ORM\ManyToOne(targetEntity="Warehouse\DataBundle\Entity\Cafe")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="cafe", referencedColumnName="id")
+     * })
+     */
+    private $cafe;
 
 
 }

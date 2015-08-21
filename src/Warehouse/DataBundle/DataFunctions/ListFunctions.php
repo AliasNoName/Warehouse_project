@@ -5,6 +5,7 @@ namespace Warehouse\DataBundle\DataFunctions;
 
 use Warehouse\DataBundle\Entity\ProductList;
 use Warehouse\DataBundle\Entity\ListNumerated;
+use Warehouse\DataBundle\DataFunctions\WarehouseFunctions;
 
 use Doctrine\ORM\EntityManager;
 
@@ -14,29 +15,61 @@ class ListFunctions
     protected $em;
     protected $warehouse;
     
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, WarehouseFunctions $w)
     {
         $this->em           = $em;
+        $this->warehouse    = $w;
     }
     
     //creates new product list
     //product list should be received using HTTP/POST - NOT IMPLEMENTED
-    public function addNewProductsList($productsList)
+    public function addNewProductsList($productsList, $cafe)
     {
-        $new_list = new ListNumerated();
+        $qb = $this->em->createQueryBuilder();
+        $list = new ListNumerated();
         
-        $this->addToDatabase($new_list);
+        $q = $qb->select('c')->from('Warehouse\DataBundle\Entity\Cafe', 'c')->where('c.id = ?1')->getQuery()->setParameter(1, $cafe['id']);
+        $c = $q->execute();
         
-        foreach($productsList as $e)
+        $list->setCafe($c[0]);
+        
+        $this->em->getConnection()->beginTransaction();
+        try
         {
-            $new_entry = new ProductList();
-            $new_entry->setQuantity($e->quantity)->setList($new_list)->setProduct($e->product);
-            
-            $this->addToDatabase($entry);
-            $this->dw->updateWarehouseProductQuantity($entry);
+            $this->addToDatabase($list);
+        
+            $q = $qb->select('p')
+                ->from('Warehouse\DataBundle\Entity\Product', 'p')
+                ->where('p.id = ?1 ')
+                ->getQuery();   
+        
+            foreach($productsList as $listEntry)
+            {
+                $q->setParameter(1,$listEntry['product']['id']);
+                $product = $q->execute();
+
+                $productList = new ProductList();
+                $productList->setList($list)
+                    ->setQuantity($listEntry['quantity'])
+                    ->setProduct($product[0]);
+
+                $this->addToDatabase($productList);
+
+                $this->warehouse->updateWarehouseProductQuantityFromList($productList);
+                
+            }
+
+            $message = $this->warehouse->checkSuplyNeeded();
+        } 
+        catch (Exception $e) {
+            // Rollback the failed transaction attempt
+            $em->getConnection()->rollback();
+            throw $e;
         }
         
-        return $this->dw->checkSuplyNeeded();
+        return true;
+
+        
         
     }
     
@@ -48,7 +81,7 @@ class ListFunctions
     
     public function getDetailedList($id)
     {
-        $q = $htis->em->createQuery('
+        $q = $this->em->createQuery('
         SELECT l from Warehouse\DataBundle\Entity\ProductList l
         WHERE l.entryNum = ?1')->setParameter(1,$id);
         return $q->getResult();

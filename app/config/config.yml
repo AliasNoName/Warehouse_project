@@ -110,3 +110,4 @@ nelmio_cors:
             hosts: ['^api\.']
         '^/warehouses':
             allow_methods: ['POST','PUT','GET']
+            
