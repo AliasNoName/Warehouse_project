@@ -93,13 +93,15 @@ class WarehouseFunctions
     public function updateWarehouseProductQuantityFromList($list_entry)
     {
         $qb = $this->em->createQueryBuilder();
-        
+        $quant = $list_entry->getQuantity();
         $q = $qb->update('Warehouse\DataBundle\Entity\WarehouseProduct', 'u')
             ->set('u.quantity',  'u.quantity - ?1')
             ->where('u.product = ?2')
             ->getQuery()
-            ->setParameter(1, $list_entry->getQuantity())
-            ->setParameter(3, $list_entry->getProduct());
+            ->setParameter(1, $quant)
+            ->setParameter(2, $list_entry->getProduct());
+        
+        $n = $q->execute();
     }
     
     //checks if quantities are below minimum
@@ -114,7 +116,9 @@ class WarehouseFunctions
             ->getQuery();
         
         $notify_list = $q->execute();
+        
         return $notify_list;
+;
     }
     
     

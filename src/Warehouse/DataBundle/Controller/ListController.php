@@ -24,13 +24,24 @@ class ListController extends Controller
         return array('lists'=> $data);
     }
     
+    // GET */lists/unfinished
+    /**
+     * @return array
+     * @View()
+     */
+    public  function getListUnfinishedAction()
+    {
+        $data = $this->get('list_functions')->getUnfinshedLists();
+        return array('lists'=> $data);
+    }
+    
     // GET */list/{{$id}}
     /**
      * @return array
      * @var integer $id warehouseEntry of entity
      * @View()
      */
-    public function getListsAction($id)
+    public function getListsItemAction($id)
     {
         $list = $this->get('list_functions');
         $entry = $list->getDetailedList($id);
@@ -44,8 +55,20 @@ class ListController extends Controller
         
         $list = $this->get('list_functions');
         $result = $list->addNewProductsList($productsList, $cafe);
-        if($result)
-            return new Response($status = 200);
+        
+        return new Response(json_encode($result), $status = 200);
+    }
+    
+    // GET */list/{{$id}}
+    /**
+     * @var integer $id warehouseEntry of entity
+     * @View()
+     */
+    public function putListsAction($id)
+    {
+        $list = $this->get('list_functions');
+        $list->putDeliveredList($id);
+        return new Response($status = 200);
     }
     
 }

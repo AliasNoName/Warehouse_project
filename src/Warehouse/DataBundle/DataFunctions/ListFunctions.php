@@ -45,20 +45,20 @@ class ListFunctions
             $q->setParameter(1,$listEntry['product']['id']);
             $product = $q->execute();
 
-            $productList = new ProductList();
-            $productList->setList($list)
+            $List = new ProductList();
+            $List->setList($list)
                 ->setQuantity($listEntry['quantity'])
                 ->setProduct($product[0]);
 
-            $this->addToDatabase($productList);
+            $this->addToDatabase($List);
 
-            $this->warehouse->updateWarehouseProductQuantityFromList($productList);
+            $this->warehouse->updateWarehouseProductQuantityFromList($List);
 
         }
 
         $message = $this->warehouse->checkSuplyNeeded();
 
-        return true;
+        return $message;
 
         
         
@@ -74,8 +74,38 @@ class ListFunctions
     {
         $q = $this->em->createQuery('
         SELECT l from Warehouse\DataBundle\Entity\ProductList l
-        WHERE l.entryNum = ?1')->setParameter(1,$id);
-        return $q->getResult();
+        WHERE l.list = ?1')->setParameter(1,$id);
+        $entry = $q->getResult();
+        
+        return $entry;
+    }
+    
+    public function getUnfinshedLists()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $q= $qb->select('l')->from('Warehouse\DataBundle\Entity\ListNumerated', 'l')
+            ->where('l.delivered = ?1')
+            ->getQuery()
+            ->setParameter(1,false);
+        $entry = $q->execute();
+        
+        return $entry;
+    }
+    
+    
+    public function putDeliveredList($id)
+    {
+        $time = new \DateTime("now");
+        $qb = $this->em->createQueryBuilder();
+        $q = $qb->update('Warehouse\DataBundle\Entity\ListNumerated','l')
+            ->set('l.delivered', '?3')
+            ->set('l.deliveredOn', '?2')
+            ->where('l.id = ?1')
+            ->getQuery()
+            ->setParameter(1,$id)
+            ->setParameter(2,$time)
+            ->setParameter(3,true);
+        $temp = $q->execute();
     }
     
     
